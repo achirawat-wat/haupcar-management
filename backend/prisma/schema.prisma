@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Owner {
+  id        String   @id @default(uuid())
+  name      String   // ชื่อเจ้าของรถ
+  phone     String   // เบอร์โทรติดต่อ
+  email     String?  // อีเมล (optional)
+  
+  cars      Car[]    // One-to-Many relation กับรถ
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("owners")
+}
+
+model Car {
+  id                 String   @id @default(uuid())
+  registrationNumber String   @unique // ทะเบียนรถ (ต้องไม่ซ้ำ)
+  province           String   @default("กรุงเทพมหานคร") // จังหวัด
+  brand              String   // ยี่ห้อรถ
+  model              String   // รุ่นรถ
+  color              String   @default("#FFFFFF") // สีรถ
+  notes              String?  // หมายเหตุ (optional)
+  imageUrls          String[] @default([]) // รูปรถหลายรูป (เก็บเป็น Array)
+  
+  carType            String   // mini, sedan, hatchback, suv, van, pick-up
+  engineType         String   @default("fuel") // ประเภทเครื่องยนต์ (fuel, ev, hybrid)
+  transmission       String   // automatic, manual
+  year               Int      // ปีรถ
+  seat               Int      // จำนวนที่นั่ง
+  pricePerDay        Float    // ราคาเช่าต่อวัน
+
+  isCompanyOwned     Boolean  @default(true) // เป็นรถของบริษัท Haupcar หรือไม่?
+  ownerId            String?  // ถ้าไม่ใช่รถบริษัท จะมี id ของเจ้าของรถ (Partner)
+  owner              Owner?   @relation(fields: [ownerId], references: [id])
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("cars") // ตั้งชื่อ Table ใน Supabase ให้เป็นตัวเล็ก/พหูพจน์
+}
