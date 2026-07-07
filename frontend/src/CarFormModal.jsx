@@ -7,7 +7,7 @@ import tinycolor from 'tinycolor2';
 import { THAILAND_PROVINCES, CAR_BRANDS, MODEL_CAR_TYPE_MAPPING, BASIC_COLORS, getValidColor } from './constants/carData';
 
 const { Option } = Select;
-const API_URL = 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 
 const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {

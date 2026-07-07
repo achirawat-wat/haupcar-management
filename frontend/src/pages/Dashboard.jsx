@@ -5,7 +5,7 @@ import { Skeleton } from 'antd';
 import { CarOutlined, BankOutlined, TeamOutlined, DollarOutlined, TrophyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:3000/api/cars';
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/cars` : 'http://localhost:3000/api/cars';
 const COLORS = ['#0048b3', '#4648d4', '#6063ee', '#89ceff', '#b2c5ff', '#e1e0ff'];
 
 const Dashboard = () => {

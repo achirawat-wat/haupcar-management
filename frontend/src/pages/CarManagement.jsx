@@ -10,7 +10,7 @@ import Papa from 'papaparse';
 import { SarabunFont } from '../assets/SarabunFont';
 import { logoBase64 } from '../assets/logoBase64';
 
-const API_URL = 'http://localhost:3000/api/cars';
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/cars` : 'http://localhost:3000/api/cars';
 
 const CarManagement = () => {
   const { message } = AntdApp.useApp();
