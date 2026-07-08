@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, App as AntdApp } from 'antd';
+import { App as AntdApp } from 'antd';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CarList from '../CarList';
@@ -34,6 +34,7 @@ const CarManagement = () => {
       const response = await axios.get(API_URL);
       setCars(response.data);
     } catch (error) {
+      console.error(error);
       message.error("Failed to fetch cars");
     } finally {
       setLoading(false);
@@ -42,6 +43,7 @@ const CarManagement = () => {
 
   useEffect(() => {
     fetchCars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -60,6 +62,7 @@ const CarManagement = () => {
       message.success("Car deleted successfully");
       fetchCars();
     } catch (error) {
+      console.error(error);
       message.error("Failed to delete car");
     }
   };

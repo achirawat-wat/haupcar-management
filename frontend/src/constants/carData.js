@@ -46,7 +46,7 @@ export const MODEL_CAR_TYPE_MAPPING = {
   "Staria": { type: "van", engine: "fuel" }, "Creta": { type: "suv", engine: "fuel" }, "H-1": { type: "van", engine: "fuel" }, "Ioniq 5": { type: "suv", engine: "ev" }, "Ioniq 6": { type: "sedan", engine: "ev" },
   "Model 3": { type: "sedan", engine: "ev" }, "Model Y": { type: "suv", engine: "ev" }, "Model S": { type: "sedan", engine: "ev" }, "Model X": { type: "suv", engine: "ev" },
   "V": { type: "hatchback", engine: "ev" }, "U": { type: "suv", engine: "ev" }, "GT": { type: "sedan", engine: "ev" },
-  "Y Plus": { type: "suv", engine: "ev" }, "ES": { type: "sedan", engine: "ev" },
+  "Y Plus": { type: "suv", engine: "ev" },
   "L07": { type: "sedan", engine: "ev" }, "S07": { type: "suv", engine: "ev" },
   "XC40": { type: "suv", engine: "ev" }, "XC60": { type: "suv", engine: "hybrid" }, "XC90": { type: "suv", engine: "hybrid" }, "C40": { type: "suv", engine: "ev" }, "S60": { type: "sedan", engine: "hybrid" }, "V60": { type: "hatchback", engine: "hybrid" }, "EX30": { type: "suv", engine: "ev" },
   "A3": { type: "sedan", engine: "fuel" }, "A4": { type: "sedan", engine: "fuel" }, "A5": { type: "sedan", engine: "fuel" }, "Q3": { type: "suv", engine: "fuel" }, "Q5": { type: "suv", engine: "fuel" }, "Q7": { type: "suv", engine: "fuel" }, "Q8": { type: "suv", engine: "hybrid" }, "e-tron": { type: "suv", engine: "ev" },

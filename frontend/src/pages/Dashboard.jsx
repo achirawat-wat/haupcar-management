@@ -32,7 +32,6 @@ const Dashboard = () => {
   const totalCars = cars.length;
   const haupCarsCount = cars.filter(c => c.isCompanyOwned).length;
   const partnerCarsCount = totalCars - haupCarsCount;
-  const evCarsCount = cars.filter(c => c.engineType === 'ev').length;
   
   const avgPrice = totalCars > 0 ? Number((cars.reduce((sum, c) => sum + (c.pricePerDay || 0), 0) / totalCars).toFixed(0)).toLocaleString() : 0;
 

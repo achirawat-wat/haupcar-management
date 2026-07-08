@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, InputNumber, Upload, Button, Switch, Select, Divider, Space, App as AntdApp, AutoComplete, Radio } from 'antd';
+import { Modal, Form, Input, InputNumber, Upload, Button, Select, Divider, App as AntdApp, AutoComplete, Radio } from 'antd';
 import { UploadOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { supabase } from './supabaseClient';
 import axios from 'axios';
@@ -93,6 +93,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
       const response = await axios.get(`${API_URL}/owners`);
       setOwners(response.data);
     } catch (error) {
+      console.error(error);
       message.error("Failed to fetch owners");
     }
   };
@@ -115,6 +116,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
       setImageUrls([]);
       setIsCompanyOwned(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, editingCar, form]);
 
   const handleUpload = async (info) => {
@@ -171,6 +173,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
       setNewOwnerEmail('');
       message.success("Owner added successfully");
     } catch (error) {
+      console.error(error);
       message.error("Failed to add owner");
     }
   };
