@@ -1,9 +1,11 @@
 import React from 'react';
-import { Table, Button, Space, Image, Popconfirm, Tag, Tooltip, Empty, Skeleton } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Image, Popconfirm, Tag, Tooltip, Empty, Skeleton, Slider } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { getValidColor } from './constants/carData';
 
-const CarList = ({ cars, loading, onEdit, onDelete }) => {
+const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
+  const uniqueBrands = [...new Set(cars.map(c => c.brand).filter(Boolean))].sort();
+  
   const columns = [
     {
       title: 'Image',
@@ -37,6 +39,8 @@ const CarList = ({ cars, loading, onEdit, onDelete }) => {
       title: 'Brand',
       dataIndex: 'brand',
       key: 'brand',
+      filters: uniqueBrands.map(b => ({ text: b, value: b })),
+      onFilter: (value, record) => record.brand === value,
       render: (text, record) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Tooltip title={record.color || 'No color'}>
@@ -106,6 +110,48 @@ const CarList = ({ cars, loading, onEdit, onDelete }) => {
       title: 'Price (฿/day)',
       dataIndex: 'pricePerDay',
       key: 'pricePerDay',
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 16, width: 250 }} onKeyDown={(e) => e.stopPropagation()}>
+          <div style={{ marginBottom: 8, textAlign: 'center' }}>
+            <span>Range: ฿{selectedKeys[0]?.[0] || 0} - ฿{selectedKeys[0]?.[1] || 10000}</span>
+          </div>
+          <Slider
+            range
+            min={0}
+            max={10000}
+            step={100}
+            value={selectedKeys[0] || [0, 10000]}
+            onChange={(val) => setSelectedKeys(val ? [val] : [])}
+            style={{ marginBottom: 16 }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Filter
+            </Button>
+            <Button
+              onClick={() => {
+                if (clearFilters) clearFilters();
+                setSelectedKeys([]);
+                confirm();
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (value, record) => {
+        if (!value || value.length !== 2) return true;
+        return record.pricePerDay >= value[0] && record.pricePerDay <= value[1];
+      },
       render: (price) => <strong>{price?.toLocaleString()}</strong>
     },
     {
@@ -157,6 +203,7 @@ const CarList = ({ cars, loading, onEdit, onDelete }) => {
           dataSource={cars} 
           rowKey="id"
           loading={loading}
+          onChange={onChange}
           pagination={{ pageSize: 10 }}
           scroll={{ x: 'max-content' }}
           locale={{

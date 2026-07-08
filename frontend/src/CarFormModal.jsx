@@ -199,6 +199,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ isCompanyOwned: true }}
+        autoComplete="off"
       >
         <div style={{ display: 'flex', gap: '16px' }}>
           <Form.Item

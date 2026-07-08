@@ -21,6 +21,7 @@ const CarManagement = () => {
   const [editingCar, setEditingCar] = useState(null);
   const [searchText, setSearchText] = useState(location.state?.searchText || "");
   const [sortType, setSortType] = useState("newest");
+  const [tableFilteredCars, setTableFilteredCars] = useState(null);
 
   useEffect(() => {
     if (location.state?.searchText) {
@@ -107,8 +108,19 @@ const CarManagement = () => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
+  // Whenever the user types in search or changes sort, reset table filter state to show accurate data
+  useEffect(() => {
+    setTableFilteredCars(null);
+  }, [searchText, sortType]);
+
+  const currentCars = tableFilteredCars || filteredCars;
+
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    setTableFilteredCars(extra.currentDataSource);
+  };
+
   const exportToCSV = () => {
-    const csvData = filteredCars.map(car => ({
+    const csvData = currentCars.map(car => ({
       'Registration': car.registrationNumber,
       'Brand': car.brand,
       'Model': car.model,
@@ -160,7 +172,7 @@ const CarManagement = () => {
     const tableColumn = ["Reg No.", "Brand", "Model", "Type", "Engine", "Price(THB)", "Owner"];
     const tableRows = [];
 
-    filteredCars.forEach(car => {
+    currentCars.forEach(car => {
       const carData = [
         car.registrationNumber || '-',
         car.brand || '-',
@@ -193,6 +205,9 @@ const CarManagement = () => {
           <p className="font-body-md text-body-md text-on-surface-variant mt-1">Manage all rental vehicles</p>
         </div>
         <div className="flex flex-wrap items-center gap-sm w-full md:w-auto">
+          <div className="text-on-surface-variant font-body-sm mr-2 whitespace-nowrap">
+            <strong>{currentCars.length}</strong> cars found
+          </div>
           {/* Search Filter */}
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
@@ -250,6 +265,7 @@ const CarManagement = () => {
           loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onChange={handleTableChange}
         />
       </div>
 
