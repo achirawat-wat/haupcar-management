@@ -1,9 +1,47 @@
-import React from 'react';
-import { Table, Button, Space, Image, Popconfirm, Tag, Tooltip, Empty, Skeleton, Slider } from 'antd';
+import React, { useState } from 'react';
+import { Table, Button, Space, Image, Popconfirm, Tag, Tooltip, Empty, Skeleton, Slider, Checkbox, Divider } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { getValidColor } from './constants/carData';
 
+const CustomGroupFilter = ({ title1, options1, title2, options2, selectedKeys, setSelectedKeys, confirm, clearFilters }) => {
+  const selectedObj = selectedKeys[0] || { group1: [], group2: [] };
+  
+  const handleCheck = (group, checkedValues) => {
+    setSelectedKeys([{ ...selectedObj, [group]: checkedValues }]);
+  };
+
+  return (
+    <div style={{ padding: 12, width: 220 }} onKeyDown={(e) => e.stopPropagation()}>
+      <div style={{ marginBottom: 8, fontWeight: 'bold' }}>{title1}</div>
+      <Checkbox.Group 
+        style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+        options={options1} 
+        value={selectedObj.group1} 
+        onChange={(vals) => handleCheck('group1', vals)} 
+      />
+      <Divider style={{ margin: '12px 0' }} />
+      <div style={{ marginBottom: 8, fontWeight: 'bold' }}>{title2}</div>
+      <Checkbox.Group 
+        style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+        options={options2} 
+        value={selectedObj.group2} 
+        onChange={(vals) => handleCheck('group2', vals)} 
+      />
+      <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+        <Button size="small" type="primary" onClick={() => confirm()} icon={<SearchOutlined />} style={{ width: 85 }}>Filter</Button>
+        <Button size="small" onClick={() => { if (clearFilters) clearFilters(); setSelectedKeys([]); confirm(); }} style={{ width: 85 }}>Reset</Button>
+      </div>
+    </div>
+  );
+};
+
 const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    setFilteredInfo(filters);
+    if (onChange) onChange(pagination, filters, sorter, extra);
+  };
+
   const uniqueBrands = [...new Set(cars.map(c => c.brand).filter(Boolean))].sort();
   const uniqueTypes = [...new Set(cars.map(c => c.carType).filter(Boolean))].sort();
   const uniqueEngines = [...new Set(cars.map(c => c.engineType).filter(Boolean))].sort();
@@ -11,6 +49,10 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
   const uniqueYears = [...new Set(cars.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
   const uniqueSeats = [...new Set(cars.map(c => c.seat).filter(Boolean))].sort((a,b) => a - b);
   const uniqueOwners = [...new Set(cars.map(c => c.isCompanyOwned ? 'Haupcar' : (c.owner?.name || 'Partner')))].sort();
+
+  const activeBrands = filteredInfo.brand || [];
+  const isModelDisabled = activeBrands.length === 0;
+  const validModels = [...new Set(cars.filter(c => activeBrands.includes(c.brand)).map(c => c.model).filter(Boolean))].sort();
 
   const prices = cars.map(c => c.pricePerDay || 0);
   const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -73,18 +115,53 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
       title: 'Model',
       dataIndex: 'model',
       key: 'model',
+      filterDropdown: (props) => {
+        if (isModelDisabled) {
+          return (
+            <div style={{ padding: 16, width: 220, textAlign: 'center' }}>
+              <div style={{ marginBottom: 16, color: '#999' }}>Please choose a brand first</div>
+              <Button size="small" onClick={() => props.confirm()}>Close</Button>
+            </div>
+          );
+        }
+        return (
+          <div style={{ padding: 12, width: 220 }} onKeyDown={(e) => e.stopPropagation()}>
+            <Checkbox.Group 
+              style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '200px', overflowY: 'auto' }}
+              options={validModels.map(m => ({ label: m, value: m }))} 
+              value={props.selectedKeys} 
+              onChange={(vals) => props.setSelectedKeys(vals)} 
+            />
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+              <Button size="small" type="primary" onClick={() => props.confirm()} icon={<SearchOutlined />} style={{ width: 85 }}>Filter</Button>
+              <Button size="small" onClick={() => { if (props.clearFilters) props.clearFilters(); props.setSelectedKeys([]); props.confirm(); }} style={{ width: 85 }}>Reset</Button>
+            </div>
+          </div>
+        );
+      },
+      onFilter: (value, record) => record.model === value,
+      filterIcon: (filtered) => (
+        <Tooltip title={isModelDisabled ? "Choose brand first" : "Filter by model"}>
+          <SearchOutlined style={{ color: filtered ? '#1677ff' : (isModelDisabled ? '#ccc' : undefined) }} />
+        </Tooltip>
+      )
     },
     {
       title: 'Type / Engine',
       key: 'typeEngine',
-      filters: [
-        { text: 'Type', value: 'Type', children: uniqueTypes.map(t => ({ text: t.toUpperCase(), value: `type:${t}` })) },
-        { text: 'Engine', value: 'Engine', children: uniqueEngines.map(e => ({ text: e.toUpperCase(), value: `engine:${e}` })) }
-      ],
+      filterDropdown: (props) => (
+        <CustomGroupFilter 
+          {...props} 
+          title1="Type" 
+          options1={uniqueTypes.map(t => ({ label: t.toUpperCase(), value: t }))}
+          title2="Engine"
+          options2={uniqueEngines.map(e => ({ label: e.toUpperCase(), value: e }))}
+        />
+      ),
       onFilter: (value, record) => {
-        if (typeof value === 'string' && value.startsWith('type:')) return record.carType === value.split(':')[1];
-        if (typeof value === 'string' && value.startsWith('engine:')) return record.engineType === value.split(':')[1];
-        return false;
+        const typeMatch = value.group1.length === 0 || value.group1.includes(record.carType);
+        const engineMatch = value.group2.length === 0 || value.group2.includes(record.engineType);
+        return typeMatch && engineMatch;
       },
       render: (_, record) => {
         let engineTag;
@@ -125,14 +202,19 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
     {
       title: 'Year/Seat',
       key: 'yearseat',
-      filters: [
-        { text: 'Year', value: 'Year', children: uniqueYears.map(y => ({ text: y.toString(), value: `year:${y}` })) },
-        { text: 'Seats', value: 'Seats', children: uniqueSeats.map(s => ({ text: `${s} Seats`, value: `seat:${s}` })) }
-      ],
+      filterDropdown: (props) => (
+        <CustomGroupFilter 
+          {...props} 
+          title1="Year" 
+          options1={uniqueYears.map(y => ({ label: y.toString(), value: y }))}
+          title2="Seats"
+          options2={uniqueSeats.map(s => ({ label: `${s} Seats`, value: s }))}
+        />
+      ),
       onFilter: (value, record) => {
-        if (typeof value === 'string' && value.startsWith('year:')) return record.year === parseInt(value.split(':')[1]);
-        if (typeof value === 'string' && value.startsWith('seat:')) return record.seat === parseInt(value.split(':')[1]);
-        return false;
+        const yearMatch = value.group1.length === 0 || value.group1.includes(record.year);
+        const seatMatch = value.group2.length === 0 || value.group2.includes(record.seat);
+        return yearMatch && seatMatch;
       },
       render: (_, record) => <span>{record.year} / {record.seat} seats</span>
     },
@@ -238,7 +320,7 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
           dataSource={cars} 
           rowKey="id"
           loading={loading}
-          onChange={onChange}
+          onChange={handleTableChange}
           pagination={{ pageSize: 10 }}
           scroll={{ x: 'max-content' }}
           locale={{
