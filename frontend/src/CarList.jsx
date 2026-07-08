@@ -5,6 +5,16 @@ import { getValidColor } from './constants/carData';
 
 const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
   const uniqueBrands = [...new Set(cars.map(c => c.brand).filter(Boolean))].sort();
+  const uniqueTypes = [...new Set(cars.map(c => c.carType).filter(Boolean))].sort();
+  const uniqueEngines = [...new Set(cars.map(c => c.engineType).filter(Boolean))].sort();
+  const uniqueTransmissions = [...new Set(cars.map(c => c.transmission).filter(Boolean))].sort();
+  const uniqueYears = [...new Set(cars.map(c => c.year).filter(Boolean))].sort((a,b) => b - a);
+  const uniqueSeats = [...new Set(cars.map(c => c.seat).filter(Boolean))].sort((a,b) => a - b);
+  const uniqueOwners = [...new Set(cars.map(c => c.isCompanyOwned ? 'Haupcar' : (c.owner?.name || 'Partner')))].sort();
+
+  const prices = cars.map(c => c.pricePerDay || 0);
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 10000;
   
   const columns = [
     {
@@ -67,6 +77,15 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
     {
       title: 'Type / Engine',
       key: 'typeEngine',
+      filters: [
+        { text: 'Type', value: 'Type', children: uniqueTypes.map(t => ({ text: t.toUpperCase(), value: `type:${t}` })) },
+        { text: 'Engine', value: 'Engine', children: uniqueEngines.map(e => ({ text: e.toUpperCase(), value: `engine:${e}` })) }
+      ],
+      onFilter: (value, record) => {
+        if (typeof value === 'string' && value.startsWith('type:')) return record.carType === value.split(':')[1];
+        if (typeof value === 'string' && value.startsWith('engine:')) return record.engineType === value.split(':')[1];
+        return false;
+      },
       render: (_, record) => {
         let engineTag;
         if (record.engineType === 'ev') {
@@ -89,6 +108,8 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
       title: 'Trans.',
       dataIndex: 'transmission',
       key: 'transmission',
+      filters: uniqueTransmissions.map(t => ({ text: t === 'automatic' ? 'Auto' : 'Manual', value: t })),
+      onFilter: (value, record) => record.transmission === value,
       render: (text) => (
         <span style={{ 
           background: text === 'automatic' ? '#e6f4ff' : '#f6ffed', 
@@ -104,6 +125,15 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
     {
       title: 'Year/Seat',
       key: 'yearseat',
+      filters: [
+        { text: 'Year', value: 'Year', children: uniqueYears.map(y => ({ text: y.toString(), value: `year:${y}` })) },
+        { text: 'Seats', value: 'Seats', children: uniqueSeats.map(s => ({ text: `${s} Seats`, value: `seat:${s}` })) }
+      ],
+      onFilter: (value, record) => {
+        if (typeof value === 'string' && value.startsWith('year:')) return record.year === parseInt(value.split(':')[1]);
+        if (typeof value === 'string' && value.startsWith('seat:')) return record.seat === parseInt(value.split(':')[1]);
+        return false;
+      },
       render: (_, record) => <span>{record.year} / {record.seat} seats</span>
     },
     {
@@ -113,14 +143,14 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 16, width: 250 }} onKeyDown={(e) => e.stopPropagation()}>
           <div style={{ marginBottom: 8, textAlign: 'center' }}>
-            <span>Range: ฿{selectedKeys[0]?.[0] || 0} - ฿{selectedKeys[0]?.[1] || 10000}</span>
+            <span>Range: ฿{selectedKeys[0]?.[0] || minPrice} - ฿{selectedKeys[0]?.[1] || maxPrice}</span>
           </div>
           <Slider
             range
-            min={0}
-            max={10000}
+            min={minPrice}
+            max={maxPrice}
             step={100}
-            value={selectedKeys[0] || [0, 10000]}
+            value={selectedKeys[0] || [minPrice, maxPrice]}
             onChange={(val) => setSelectedKeys(val ? [val] : [])}
             style={{ marginBottom: 16 }}
           />
@@ -157,6 +187,11 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
     {
       title: 'Owner',
       key: 'owner',
+      filters: uniqueOwners.map(o => ({ text: o, value: o })),
+      onFilter: (value, record) => {
+        const ownerName = record.isCompanyOwned ? 'Haupcar' : (record.owner?.name || 'Partner');
+        return ownerName === value;
+      },
       render: (_, record) => (
         record.isCompanyOwned 
           ? <span style={{ color: '#0048b3', fontWeight: 'bold' }}>Haupcar</span>
