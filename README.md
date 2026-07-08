@@ -2,7 +2,7 @@
 
 A modern, responsive, and full-stack web application designed for managing company vehicle data. Built as a job application assignment for Haupcar Co., Ltd.
 
-![Dashboard Preview](https://github.com/achirawat-wat/haupcar-management/assets/placeholder.png)
+![Dashboard Preview](<!-- 📸 Drag and Drop your screenshot here in GitHub Editor -->)
 
 ## ✨ Features
 
@@ -49,10 +49,11 @@ DATABASE_URL="your_postgresql_connection_string"
 DIRECT_URL="your_postgresql_direct_connection_string"
 PORT=3000
 ```
-Generate the Prisma client and push the schema:
+Generate the Prisma client, push the schema, and optionally seed the database with mock data:
 ```bash
 npx prisma generate
 npx prisma db push
+node seed.js    # Run this to generate mock owners and 200+ cars
 ```
 Start the backend server:
 ```bash
