@@ -11,6 +11,7 @@ A modern, responsive, and full-stack web application designed for managing compa
 - **Mobile-First Design**: Responsive UI that switches from a data table on desktop to interactive cards on mobile devices.
 - **Data Export**: Export fleet data instantly to CSV and PDF formats (with Thai language support).
 - **Advanced Form Handling**: Image uploading via Supabase Storage, dynamic color picking, and quick-add owner functionality.
+- **Smart Autocomplete & Autofill**: Dynamically suggests car brands, models, and colors based on predefined datasets and existing database records. Features an intelligent color shade generator.
 - **Robust Error Handling**: Prevents duplicate registration numbers and handles API failures gracefully.
 
 ## 🛠️ Technology Stack
@@ -53,7 +54,7 @@ Generate the Prisma client, push the schema, and optionally seed the database wi
 ```bash
 npx prisma generate
 npx prisma db push
-node seed.js    # Run this to generate mock owners and 15+ mock cars
+node seed.js    # Run this to generate 100 mock cars
 ```
 Start the backend server:
 ```bash
