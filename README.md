@@ -2,7 +2,7 @@
 
 A modern, responsive, and full-stack web application designed for managing company vehicle data. Built as a job application assignment for Haupcar Co., Ltd.
 
-![Dashboard Preview](<!-- 📸 Drag and Drop your screenshot here in GitHub Editor -->)
+<img width="1906" height="841" alt="image" src="https://github.com/user-attachments/assets/a38411eb-ce5f-429d-b65f-b253d495e64e" />
 
 ## ✨ Features
 
