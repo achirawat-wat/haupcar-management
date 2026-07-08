@@ -115,6 +115,9 @@ app.put('/api/cars/:id', async (req, res) => {
     res.json(car);
   } catch (error) {
     console.error("Error updating car:", error);
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: "Registration number already exists." });
+    }
     res.status(500).json({ error: "Failed to update car" });
   }
 });
