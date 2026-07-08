@@ -201,6 +201,10 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
         initialValues={{ isCompanyOwned: true }}
         autoComplete="off"
       >
+        {/* Hidden inputs to trick Chrome's aggressive autofill */}
+        <input type="text" style={{ display: 'none' }} autoComplete="off" />
+        <input type="password" style={{ display: 'none' }} autoComplete="off" />
+        
         <div style={{ display: 'flex', gap: '16px' }}>
           <Form.Item
             name="registrationNumber"
@@ -208,7 +212,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
             rules={[{ required: true, message: 'Please input the registration number!' }]}
             style={{ flex: 1 }}
           >
-            <Input placeholder="e.g. กข 1234" allowClear />
+            <Input placeholder="e.g. กข 1234" allowClear autoComplete="none" />
           </Form.Item>
 
           <Form.Item
@@ -241,6 +245,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
             style={{ flex: 1 }}
           >
             <AutoComplete
+              autoComplete="none"
               allowClear
               options={allBrands.map(brand => ({ value: brand }))}
               placeholder="e.g. Toyota"
@@ -258,6 +263,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
             style={{ flex: 1 }}
           >
             <AutoComplete
+              autoComplete="none"
               allowClear
               options={allModels.map(model => ({ value: model }))}
               placeholder={selectedBrand ? "e.g. Yaris" : "Select brand first"}
@@ -319,6 +325,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
             style={{ flex: 1 }}
           >
             <AutoComplete
+              autoComplete="none"
               allowClear
               options={colorDisplayOptions.map(opt => ({ 
                 value: opt.value,
@@ -338,6 +345,7 @@ const CarFormModal = ({ visible, onCancel, onSave, editingCar, cars = [] }) => {
               }
             >
               <Input 
+                autoComplete="none"
                 prefix={
                   <div style={{ 
                     width: '14px', height: '14px', borderRadius: '50%', 
