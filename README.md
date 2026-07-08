@@ -53,7 +53,7 @@ Generate the Prisma client, push the schema, and optionally seed the database wi
 ```bash
 npx prisma generate
 npx prisma db push
-node seed.js    # Run this to generate mock owners and 200+ cars
+node seed.js    # Run this to generate mock owners and 15+ mock cars
 ```
 Start the backend server:
 ```bash
