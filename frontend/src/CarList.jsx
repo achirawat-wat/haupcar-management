@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Space, Image, Popconfirm, Tag, Tooltip, Empty, Skeleton, Slider, Checkbox, Divider } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, FilterFilled } from '@ant-design/icons';
 import { getValidColor } from './constants/carData';
 
 const CustomGroupFilter = ({ title1, options1, title2, options2, selectedKeys, setSelectedKeys, confirm, clearFilters }) => {
@@ -28,8 +28,8 @@ const CustomGroupFilter = ({ title1, options1, title2, options2, selectedKeys, s
         onChange={(vals) => handleCheck('group2', vals)} 
       />
       <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Button size="small" type="primary" onClick={() => confirm()} icon={<SearchOutlined />} style={{ width: 85 }}>Filter</Button>
-        <Button size="small" onClick={() => { if (clearFilters) clearFilters(); setSelectedKeys([]); confirm(); }} style={{ width: 85 }}>Reset</Button>
+        <Button size="small" type="link" onClick={() => { if (clearFilters) clearFilters(); setSelectedKeys([]); confirm(); }} style={{ padding: 0, color: '#888' }}>Reset</Button>
+        <Button size="small" type="primary" onClick={() => confirm()} style={{ width: 60 }}>OK</Button>
       </div>
     </div>
   );
@@ -133,8 +133,8 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
               onChange={(vals) => props.setSelectedKeys(vals)} 
             />
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
-              <Button size="small" type="primary" onClick={() => props.confirm()} icon={<SearchOutlined />} style={{ width: 85 }}>Filter</Button>
-              <Button size="small" onClick={() => { if (props.clearFilters) props.clearFilters(); props.setSelectedKeys([]); props.confirm(); }} style={{ width: 85 }}>Reset</Button>
+              <Button size="small" type="link" onClick={() => { if (props.clearFilters) props.clearFilters(); props.setSelectedKeys([]); props.confirm(); }} style={{ padding: 0, color: '#888' }}>Reset</Button>
+              <Button size="small" type="primary" onClick={() => props.confirm()} style={{ width: 60 }}>OK</Button>
             </div>
           </div>
         );
@@ -142,7 +142,7 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
       onFilter: (value, record) => record.model === value,
       filterIcon: (filtered) => (
         <Tooltip title={isModelDisabled ? "Choose brand first" : "Filter by model"}>
-          <SearchOutlined style={{ color: filtered ? '#1677ff' : (isModelDisabled ? '#ccc' : undefined) }} />
+          <FilterFilled style={{ color: filtered ? '#1677ff' : (isModelDisabled ? '#ccc' : undefined) }} />
         </Tooltip>
       )
     },
@@ -236,30 +236,13 @@ const CarList = ({ cars, loading, onEdit, onDelete, onChange }) => {
             onChange={(val) => setSelectedKeys(val ? [val] : [])}
             style={{ marginBottom: 16 }}
           />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => confirm()}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Filter
-            </Button>
-            <Button
-              onClick={() => {
-                if (clearFilters) clearFilters();
-                setSelectedKeys([]);
-                confirm();
-              }}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Reset
-            </Button>
-          </Space>
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+              <Button size="small" type="link" onClick={() => { if (clearFilters) clearFilters(); setSelectedKeys([]); confirm(); }} style={{ padding: 0, color: '#888' }}>Reset</Button>
+              <Button size="small" type="primary" onClick={() => confirm()} style={{ width: 60 }}>OK</Button>
+            </div>
         </div>
       ),
+      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#1677ff' : undefined }} />,
       onFilter: (value, record) => {
         if (!value || value.length !== 2) return true;
         return record.pricePerDay >= value[0] && record.pricePerDay <= value[1];
