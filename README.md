@@ -90,5 +90,46 @@ Visit `http://localhost:5173` in your browser.
 | `GET` | `/api/owners` | Fetch all car owners |
 | `POST` | `/api/owners` | Add a new car owner |
 
+
+## 🗄️ Database Schema
+
+The database consists of two main tables: `owners` and `cars`.
+
+### Table: `owners`
+Stores information about car partners or owners.
+
+| Field | Data Type | Description |
+|---|---|---|
+| `id` | `String` (UUID) | Primary Key. Unique identifier for the owner. |
+| `name` | `String` | Full name of the car owner. |
+| `phone` | `String` | Contact phone number. |
+| `email` | `String?` | Optional. Contact email address. |
+| `createdAt` | `DateTime` | Timestamp when the record was created. |
+| `updatedAt` | `DateTime` | Timestamp when the record was last updated. |
+
+### Table: `cars`
+Stores comprehensive details about each vehicle in the fleet.
+
+| Field | Data Type | Description |
+|---|---|---|
+| `id` | `String` (UUID) | Primary Key. Unique identifier for the car. |
+| `registrationNumber` | `String` | Unique. License plate or registration number. |
+| `province` | `String` | Province of registration (Default: "กรุงเทพมหานคร"). |
+| `brand` | `String` | Car brand or manufacturer (e.g., Toyota, Honda). |
+| `model` | `String` | Specific car model. |
+| `color` | `String` | Hex color code of the car (Default: "#FFFFFF"). |
+| `notes` | `String?` | Optional. Additional notes or remarks. |
+| `imageUrls` | `String[]` | Array of image URLs showcasing the vehicle. |
+| `carType` | `String` | Classification (e.g., mini, sedan, hatchback, suv, van, pick-up). |
+| `engineType` | `String` | Type of engine (e.g., fuel, ev, hybrid) (Default: "fuel"). |
+| `transmission` | `String` | Transmission system (e.g., automatic, manual). |
+| `year` | `Int` | Manufacturing year of the vehicle. |
+| `seat` | `Int` | Number of passenger seats available. |
+| `pricePerDay` | `Float` | Rental price per day. |
+| `isCompanyOwned` | `Boolean` | Indicates if the car is directly owned by the company. |
+| `ownerId` | `String?` | Optional. Foreign key referencing `owners.id` for partner vehicles. |
+| `createdAt` | `DateTime` | Timestamp when the record was created. |
+| `updatedAt` | `DateTime` | Timestamp when the record was last updated. |
+
 ## 👨‍💻 Author
 **Achirawat** - Software Developer Candidate
